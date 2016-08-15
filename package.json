@@ -1,6 +1,6 @@
 {
   "name": "config-creater",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "npm scripts, gulp, webpack, sample config file generator",
   "main": "index.js",
   "bin": {
