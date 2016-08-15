@@ -1,0 +1,75 @@
+#!/usr/bin/env node
+
+
+
+
+/**
+ * Handle cli input
+ */
+if (!module.parent) {
+    var yargs = require("yargs")
+        .command("config", "创建 gulpfile.sample.js, package.sample.js, webpack.config.sample.js")
+        .command("config gulpfile", "创建 gulpfile.sample.js")
+        .command("config npm", "创建 package.sample.json")
+        .command("config webpack", "创建 webpack.config.sample.js")
+
+        .epilogue("查看命令的详细使用, 输入 <command> --help\n如: $0  --help");
+
+    var argv    = yargs.argv;
+    var command = argv._[0];
+    var valid   = ["", "gulpfile", "npm", "webpack"];
+
+    if (valid.indexOf(command) > -1) {
+        handleIncoming(command, yargs.reset());
+    } else {
+        yargs.showHelp();
+    }
+}
+
+/**
+ * @param {{cli: object, [whitelist]: array, [cb]: function}} opts
+ * @returns {*}
+ */
+function handleCli(opts) {
+    return require("../lib/command")(opts);
+}
+
+module.exports = handleCli;
+
+/**
+ * @param {string} command
+ * @param {object} yargs
+ */
+function handleIncoming(command, yargs) {
+    var out;
+    if (command === "") {
+        out = yargs
+            .usage("分别创建 gulp、npm scripts、 webpack 的配置文件范例，在使用时去掉范例文件名中 .sample")
+            .help()
+            .argv;
+    }
+    if (command === "gulp") {
+        out = yargs
+            .usage("创建 gulp 范例配置文件，用时去掉范例文件名中.sample，比如把 gulpfile.sample.js 改为 gulpfile.js")
+            .help()
+            .argv;
+    }
+    if (command === "npm") {
+        out = yargs
+            .usage("创建 npm scripts 配置文件，在使用时先在项目文件夹下执行 npm init, 然后把 package.sample.json 中 scripts 字段中的内容拷贝到当前项目的 package.json 中")
+            .help()
+            .argv;
+    }
+    if (command === "webpack") {
+        out = yargs
+            .usage("创建 webpack 范例配置文件，用时去掉范例文件名中 .sample，比如把 webpack.config.sample.js 改为 webpack.config.js")
+            .help()
+            .argv;
+    }
+
+    if (out.help) {
+        return yargs.showHelp();
+    }
+
+    handleCli({command: out._[0], args:yargs.argv})
+}
